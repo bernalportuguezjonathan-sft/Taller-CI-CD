@@ -2,10 +2,67 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Frontend de Prueba</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Servidor de Producción - Taller CI/CD</title>
+    <style>
+        body {
+            font-family: Segoe UI, Arial, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .tarjeta {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 40px 56px;
+            text-align: center;
+            max-width: 640px;
+        }
+        h1 { font-size: 22px; font-weight: 600; margin: 0 0 24px; }
+        #mensaje { font-size: 28px; font-weight: 700; margin: 16px 0; }
+        .ok { color: #4ade80; }
+        .error { color: #f87171; }
+        .detalle { color: #94a3b8; font-size: 14px; line-height: 1.7; }
+        code { color: #cbd5e1; }
+    </style>
 </head>
-<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
-    <h1>¡Despliegue Exitoso con Docker Compose! 🚀</h1>
-    <p>El frontend se está ejecutando en Nginx desde un contenedor en producción.</p>
+<body>
+    <div class="tarjeta">
+        <h1>Frontend Nginx — Despliegue con Docker Compose</h1>
+        <p id="mensaje">Consultando la base de datos...</p>
+        <p class="detalle" id="detalle"></p>
+    </div>
+
+    <script>
+        fetch('/api')
+            .then(function (respuesta) { return respuesta.json(); })
+            .then(function (datos) {
+                var mensaje = document.getElementById('mensaje');
+                var detalle = document.getElementById('detalle');
+                if (datos.status === 'ok') {
+                    mensaje.textContent = 'Conexión exitosa a la base de datos';
+                    mensaje.className = 'ok';
+                    detalle.innerHTML =
+                        'Motor: <code>' + datos.motor + '</code><br>' +
+                        'Base de datos: <code>' + datos.base_de_datos + '</code><br>' +
+                        'Host interno: <code>' + datos.host + '</code>';
+                } else {
+                    mensaje.textContent = datos.mensaje;
+                    mensaje.className = 'error';
+                    detalle.textContent = datos.detalle || '';
+                }
+            })
+            .catch(function (error) {
+                var mensaje = document.getElementById('mensaje');
+                mensaje.textContent = 'No se pudo contactar la API';
+                mensaje.className = 'error';
+                document.getElementById('detalle').textContent = error;
+            });
+    </script>
 </body>
 </html>
