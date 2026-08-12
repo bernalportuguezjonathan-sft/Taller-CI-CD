@@ -9,16 +9,20 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      DHU: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DHT: ${{ secrets.DOCKER_HUB_TOKEN }}
+
     steps:
       - name: Copiar código del repositorio
         uses: actions/checkout@v4
 
       - name: DIAG - DOCKER_HUB_USERNAME llega vacio
-        if: ${{ secrets.DOCKER_HUB_USERNAME == '' }}
+        if: ${{ env.DHU == '' }}
         run: echo "vacio"
 
       - name: DIAG - DOCKER_HUB_TOKEN llega vacio
-        if: ${{ secrets.DOCKER_HUB_TOKEN == '' }}
+        if: ${{ env.DHT == '' }}
         run: echo "vacio"
 
       - name: Iniciar sesión en Docker Hub
