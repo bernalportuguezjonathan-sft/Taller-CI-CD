@@ -5,31 +5,22 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  DOCKERHUB_USER: jonaa07
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
-    env:
-      DHU: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DHT: ${{ secrets.DOCKER_HUB_TOKEN }}
 
     steps:
       - name: Copiar código del repositorio
         uses: actions/checkout@v4
 
-      - name: DIAG - DOCKER_HUB_USERNAME llega vacio
-        if: ${{ env.DHU == '' }}
-        run: echo "vacio"
-
-      - name: DIAG - DOCKER_HUB_TOKEN llega vacio
-        if: ${{ env.DHT == '' }}
-        run: echo "vacio"
-
       - name: Iniciar sesión en Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Configurar Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -41,8 +32,8 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/mi-api:latest
-            ${{ secrets.DOCKER_HUB_USERNAME }}/mi-api:${{ github.sha }}
+            ${{ env.DOCKERHUB_USER }}/mi-api:latest
+            ${{ env.DOCKERHUB_USER }}/mi-api:${{ github.sha }}
 
       - name: Construir y subir imagen del Frontend
         uses: docker/build-push-action@v5
@@ -51,5 +42,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_HUB_USERNAME }}/mi-frontend:latest
-            ${{ secrets.DOCKER_HUB_USERNAME }}/mi-frontend:${{ github.sha }}
+            ${{ env.DOCKERHUB_USER }}/mi-frontend:latest
+            ${{ env.DOCKERHUB_USER }}/mi-frontend:${{ github.sha }}
