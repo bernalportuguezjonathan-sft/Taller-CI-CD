@@ -3,40 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Servidor de Producción - Taller CI/CD</title>
-    <style>
-        body {
-            font-family: Segoe UI, Arial, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .tarjeta {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 40px 56px;
-            text-align: center;
-            max-width: 640px;
-        }
-        h1 { font-size: 22px; font-weight: 600; margin: 0 0 24px; }
-        #mensaje { font-size: 28px; font-weight: 700; margin: 16px 0; }
-        .ok { color: #4ade80; }
-        .error { color: #f87171; }
-        .detalle { color: #94a3b8; font-size: 14px; line-height: 1.7; }
-        code { color: #cbd5e1; }
-    </style>
+    <title>Frontend de Prueba</title>
 </head>
-<body>
-    <div class="tarjeta">
-        <h1>Frontend Nginx — Despliegue con Docker Compose</h1>
-        <p id="mensaje">Consultando la base de datos...</p>
-        <p class="detalle" id="detalle"></p>
-    </div>
+<body style="font-family: Arial, sans-serif; text-align: center; margin-top: 50px;">
+    <h1>¡Despliegue Exitoso con Docker Compose! 🚀</h1>
+    <p>El frontend se está ejecutando en Nginx desde un contenedor en producción.</p>
+
+    <p id="mensaje" style="font-size: 22px; font-weight: bold; margin-top: 36px;">
+        Consultando la base de datos...
+    </p>
+    <p id="detalle" style="color: #555; line-height: 1.6;"></p>
 
     <script>
         fetch('/api')
@@ -46,21 +22,20 @@
                 var detalle = document.getElementById('detalle');
                 if (datos.status === 'ok') {
                     mensaje.textContent = 'Conexión exitosa a la base de datos';
-                    mensaje.className = 'ok';
+                    mensaje.style.color = '#1a7f37';
                     detalle.innerHTML =
-                        'Motor: <code>' + datos.motor + '</code><br>' +
-                        'Base de datos: <code>' + datos.base_de_datos + '</code><br>' +
-                        'Host interno: <code>' + datos.host + '</code>';
+                        'Motor: <b>' + datos.motor + '</b><br>' +
+                        'Base de datos: <b>' + datos.base_de_datos + '</b>';
                 } else {
                     mensaje.textContent = datos.mensaje;
-                    mensaje.className = 'error';
+                    mensaje.style.color = '#b3261e';
                     detalle.textContent = datos.detalle || '';
                 }
             })
             .catch(function (error) {
                 var mensaje = document.getElementById('mensaje');
                 mensaje.textContent = 'No se pudo contactar la API';
-                mensaje.className = 'error';
+                mensaje.style.color = '#b3261e';
                 document.getElementById('detalle').textContent = error;
             });
     </script>
