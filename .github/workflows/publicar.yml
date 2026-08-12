@@ -13,6 +13,14 @@ jobs:
       - name: Copiar código del repositorio
         uses: actions/checkout@v4
 
+      - name: DIAG - DOCKER_HUB_USERNAME llega vacio
+        if: ${{ secrets.DOCKER_HUB_USERNAME == '' }}
+        run: echo "vacio"
+
+      - name: DIAG - DOCKER_HUB_TOKEN llega vacio
+        if: ${{ secrets.DOCKER_HUB_TOKEN == '' }}
+        run: echo "vacio"
+
       - name: Iniciar sesión en Docker Hub
         uses: docker/login-action@v3
         with:
