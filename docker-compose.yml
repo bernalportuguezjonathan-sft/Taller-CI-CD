@@ -1,0 +1,69 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: produccion_db
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - red_interna
+
+  backend:
+    image: ${DOCKERHUB_USER}/mi-api:${API_TAG:-latest}
+    container_name: produccion_backend
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - red_interna
+      - red_externa
+
+  frontend:
+    image: ${DOCKERHUB_USER}/mi-frontend:${FRONTEND_TAG:-latest}
+    container_name: produccion_frontend
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - red_externa
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: proxy_manager
+    restart: always
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    depends_on:
+      - frontend
+    networks:
+      - red_externa
+
+networks:
+  red_interna:
+    driver: bridge
+  red_externa:
+    driver: bridge
+
+volumes:
+  pgdata:
+  npm_data:
+  npm_letsencrypt:
