@@ -9,7 +9,29 @@ env:
   DOCKERHUB_USER: jonaa07
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install pytest
+
+      - name: Ejecutar pruebas pytest
+        run: pytest backend/
+
   build-and-push:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -44,3 +66,14 @@ jobs:
           tags: |
             ${{ env.DOCKERHUB_USER }}/mi-frontend:latest
             ${{ env.DOCKERHUB_USER }}/mi-frontend:${{ github.sha }}
+
+      - name: Desplegar en servidor cloud
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/app
+            docker compose pull
+            docker compose up -d

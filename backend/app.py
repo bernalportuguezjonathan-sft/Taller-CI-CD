@@ -16,6 +16,11 @@ def db_config():
     }
 
 
+@app.route('/')
+def home():
+    return "OK", 200
+
+
 @app.route('/api')
 def status():
     cfg = db_config()
