@@ -9,7 +9,7 @@ env:
   DOCKERHUB_USER: jonaa07
 
 jobs:
-  test:
+  test-and-security:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,13 +25,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
-          pip install pytest
+          pip install pytest bandit
 
+      - name: Ejecutar análisis de seguridad con bandit
+        run: bandit -r . -s B101
+      
       - name: Ejecutar pruebas pytest
         run: pytest backend/
+      
 
   build-and-push:
-    needs: test
+    needs: test-and-security
     runs-on: ubuntu-latest
 
     steps:
@@ -48,7 +52,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Construir y subir imagen de la API
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: ./backend
           file: ./backend/Dockerfile
@@ -58,7 +62,7 @@ jobs:
             ${{ env.DOCKERHUB_USER }}/mi-api:${{ github.sha }}
 
       - name: Construir y subir imagen del Frontend
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v4
         with:
           context: ./frontend
           file: ./frontend/Dockerfile

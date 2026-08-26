@@ -63,4 +63,4 @@ def registrar():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    sample.run(host='0.0.0.0', port=5050, debug=True)
+    sample.run(host='0.0.0.0', port=5050)  # nosec B104 - necesario para exponer el puerto dentro del contenedor Docker
