@@ -2,7 +2,7 @@ name: Publicar Imagen en Docker Hub
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/**" ]
   workflow_dispatch:
 
 env:
@@ -29,13 +29,30 @@ jobs:
 
       - name: Ejecutar análisis de seguridad con bandit
         run: bandit -r . -s B101
-      
+
       - name: Ejecutar pruebas pytest
         run: pytest backend/
-      
+
+  image-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo
+        uses: actions/checkout@v4
+
+      - name: Construir imagen de la API (sin publicar)
+        run: docker build -t mi-api:scan ./backend
+
+      - name: Escanear imagen con Trivy
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: 'mi-api:scan'
+          format: 'table'
+          exit-code: '1'
+          severity: 'HIGH,CRITICAL'
 
   build-and-push:
-    needs: test-and-security
+    needs: [test-and-security, image-scan]
     runs-on: ubuntu-latest
 
     steps:
@@ -72,6 +89,7 @@ jobs:
             ${{ env.DOCKERHUB_USER }}/mi-frontend:${{ github.sha }}
 
       - name: Desplegar en servidor cloud
+        if: github.ref == 'refs/heads/main'
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_HOST }}
