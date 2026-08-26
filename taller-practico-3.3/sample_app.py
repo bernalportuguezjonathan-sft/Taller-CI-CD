@@ -4,8 +4,6 @@ from flask import Flask, render_template, request, redirect, url_for
 
 sample = Flask(__name__)
 
-MYSQL_PASSWORD = "super_secret_123"
-
 DB_CONFIG = {
     'host': os.getenv('DB_HOST', 'servidor-bd'),
     'user': os.getenv('DB_USER', 'root'),
@@ -65,4 +63,4 @@ def registrar():
     return redirect(url_for('home'))
 
 if __name__ == '__main__':
-    sample.run(host='0.0.0.0', port=5050, debug=True)
+    sample.run(host='0.0.0.0', port=5050)  # nosec B104 - necesario para exponer el puerto dentro del contenedor Docker
