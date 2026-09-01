@@ -18,7 +18,7 @@ def db_config():
 
 @app.route('/')
 def home():
-    return "Error interno", 500
+    return "OK", 200
 
 
 @app.route('/api')
