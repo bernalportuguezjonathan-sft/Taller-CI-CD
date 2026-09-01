@@ -44,7 +44,7 @@ jobs:
         run: docker build -t mi-api:scan ./backend
 
       - name: Escanear imagen con Trivy
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.32.0
         with:
           image-ref: 'mi-api:scan'
           format: 'table'
