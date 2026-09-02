@@ -4,8 +4,6 @@ from flask import Flask, render_template, request, redirect, url_for
 
 sample = Flask(__name__)
 
-MYSQL_PASSWORD = "super_secreto_123"
-
 DB_CONFIG = {
     'host': os.getenv('DB_HOST', 'servidor-bd'),
     'user': os.getenv('DB_USER', 'root'),
