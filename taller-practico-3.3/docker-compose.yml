@@ -1,0 +1,65 @@
+services:
+  servidor-bd-ejemplo:
+    image: mysql:8.0
+    container_name: servidor-bd-ejemplo
+    restart: always
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - red_interna
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ${DOCKERHUB_USER}/api-implantacion:${API_TAG:-latest}
+    container_name: api_implantacion
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DB_HOST: servidor-bd-ejemplo
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - servidor-bd-ejemplo
+    networks:
+      - red_interna
+      - red_externa
+
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: proxy_manager
+    restart: always
+    ports:
+      - "80:80"
+      - "81:81"
+      - "443:443"
+    volumes:
+      - npm_data:/data
+      - npm_letsencrypt:/etc/letsencrypt
+    depends_on:
+      - api
+    networks:
+      - red_externa
+
+networks:
+  red_interna:
+    driver: bridge
+  red_externa:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  npm_data:
+  npm_letsencrypt:

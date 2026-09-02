@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Registro de Aprendices</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+        .estado-ok { color: #1a7f37; font-weight: bold; }
+        .estado-error { color: #b3261e; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        form { margin-top: 24px; display: flex; gap: 8px; flex-wrap: wrap; }
+        input { padding: 6px; flex: 1; min-width: 150px; }
+        button { padding: 6px 16px; }
+    </style>
+</head>
+<body>
+    <h1>Registro de Aprendices</h1>
+    <p>
+        Estado de la base de datos:
+        {% if db_status == "Conexión Exitosa" %}
+            <span class="estado-ok">{{ db_status }}</span>
+        {% else %}
+            <span class="estado-error">{{ db_status }}</span>
+        {% endif %}
+    </p>
+
+    <form action="/registrar" method="post">
+        <input type="text" name="nombre_completo" placeholder="Nombre completo" required>
+        <input type="text" name="numero_documento" placeholder="Numero de documento" required>
+        <input type="text" name="ficha" placeholder="Ficha" required>
+        <button type="submit">Registrar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr><th>Nombre</th><th>Documento</th><th>Ficha</th><th>Creado</th></tr>
+        </thead>
+        <tbody>
+            {% for a in aprendices %}
+            <tr>
+                <td>{{ a.nombre_completo }}</td>
+                <td>{{ a.numero_documento }}</td>
+                <td>{{ a.ficha }}</td>
+                <td>{{ a.creado_en }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

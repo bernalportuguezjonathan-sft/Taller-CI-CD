@@ -7,7 +7,7 @@ sample = Flask(__name__)
 DB_CONFIG = {
     'host': os.getenv('DB_HOST', 'servidor-bd'),
     'user': os.getenv('DB_USER', 'root'),
-    'passwd': os.getenv('DB_PASSWORD', '1234'),
+    'password': os.getenv('DB_PASSWORD', '1234'),
     'database': os.getenv('DB_NAME', 'adso_db')
 }
 
@@ -40,6 +40,7 @@ def home():
     except Exception as e:
         aprendices = []
         db_status = f"Error de conexión: {e}"
+        print(f"[ERROR] Fallo de conexion a MySQL: {e}")
 
     return render_template('index.html', aprendices=aprendices, db_status=db_status)
 
