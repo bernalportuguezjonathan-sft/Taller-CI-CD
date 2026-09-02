@@ -50,12 +50,10 @@ jobs:
         run: docker build -t api-implantacion:scan ./taller-practico-3.3
 
       - name: Escanear imagen con Trivy
-        uses: aquasecurity/trivy-action@v0.32.0
-        with:
-          image-ref: 'api-implantacion:scan'
-          format: 'table'
-          exit-code: '1'
-          severity: 'HIGH,CRITICAL'
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy image api-implantacion:scan \
+            --severity HIGH,CRITICAL --exit-code 1
 
   build-and-push:
     needs: [test-and-security, image-scan]
