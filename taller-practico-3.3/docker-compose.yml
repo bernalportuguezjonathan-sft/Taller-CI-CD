@@ -53,6 +53,25 @@ services:
     networks:
       - red_externa
 
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: always
+    volumes:
+      - uptime_kuma_data:/app/data
+    networks:
+      - red_interna
+      - red_externa
+
+  dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - red_externa
+
 networks:
   red_interna:
     driver: bridge
@@ -63,3 +82,4 @@ volumes:
   mysql_data:
   npm_data:
   npm_letsencrypt:
+  uptime_kuma_data:
